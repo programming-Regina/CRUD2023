@@ -1,0 +1,34 @@
+ENTORNOS VIRTUALES: VIRTUALENV
+==============================
+INSTALACIÓN (1a VEZ)
+pip install virtualenv
+
+CREAR ENTORNO VIRTUAL
+virtualenv venv
+
+ACTIVAR ENTORNO VIRTUAL
+venv\Scripts\activate
+
+VER QUÉ HAY INSTALADO EN EL ENTORNO VIRTUAL
+pip list
+
+INSTALAR ALGUNA LIBRERÍA EN EL ENTORNO VIRTUAL
+pip install pandas
+
+VOLVER A CHEQUEAR
+pip list
+
+GRABAR REQUERIMIENTOS DEL ENTORNO
+pip freeze > requirements.txt
+
+DESACTIVAR ENTORNO VIRTUAL
+deactivate
+
+CHEQUEAR POR 3a VEZ PAQUETES INSTALADOS
+pip list
+
+INSTALAR REQUERIMIENTOS
+pip install requirements.txt
+
+--------------------------------------
+DOCUMENTACIÓN: https://virtualenv.pypa.io/en/stable/index.html 
