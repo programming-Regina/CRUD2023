@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 import sqlite3 as sq3
+import matplotlib.pyplot as plt
 
 '''
 ************************
@@ -22,6 +23,40 @@ def salir():
         con.close()
         raiz.destroy()
 
+# GrÄFICAS
+# Por escuelas
+def alumnos_en_escuelas():
+    query = '''SELECT COUNT(alumnos.legajo) AS "total", escuelas.nombre FROM alumnos INNER JOIN escuelas ON alumnos.id_escuela = escuelas._id GROUP BY escuelas.nombre ORDER BY total DESC'''
+    cur.execute(query)
+    resultado = cur.fetchall()
+    #print(resultado)
+
+    escuelas =[]
+    cantidad = []
+    for r in resultado:
+        cantidad.append(r[0])
+        escuelas.append(r[1])
+
+    plt.bar(escuelas, cantidad)
+    plt.xticks(rotation = 90)
+    plt.show()
+
+def alumnos_con_notas():
+    query = '''SELECT COUNT(legajo) AS "total", nota FROM alumnos GROUP BY nota'''
+    cur.execute(query)
+    resultado = cur.fetchall()
+    #print(resultado)
+
+    nota =[]
+    cantidad = []
+    for r in resultado:
+        cantidad.append(r[0])
+        nota.append(r[1])
+
+    plt.bar(nota, cantidad)
+    #plt.xticks(rotation = 90)
+    plt.show()
+
 def limpiar():
     legajo.set("")
     apellido.set("")
@@ -32,6 +67,76 @@ def limpiar():
     localidad.set("")
     provincia.set("")
     legajo_input.config(state='normal')
+
+def mostrar_licencia():
+    msg = '''
+    Sistema CRUD en Python
+    Copyright (C) 2023 - Regina Molares para Codo a Codo 4.0
+    Email: regina.molares@gmail.com\n=======================================
+    This program is free software: you can redistribute it 
+    and/or modify it under the terms of the GNU General Public 
+    License as published by the Free Software Foundation, 
+    either version 3 of the License, or (at your option) any 
+    later version.
+    This program is distributed in the hope that it will be 
+    useful, but WITHOUT ANY WARRANTY; without even the 
+    implied warranty of MERCHANTABILITY or FITNESS FOR A 
+    PARTICULAR PURPOSE.  See the GNU General Public License 
+    for more details.
+    You should have received a copy of the GNU General Public 
+    License along with this program.  
+    If not, see <https://www.gnu.org/licenses/>.
+    '''
+    messagebox.showinfo("LICENCIA", msg)
+
+
+def acerca_de():
+    messagebox.showinfo("ACERCA DE...","Creado por RNM\npara CaC 4.0 - Big Data\nNoviembre 2023 ")
+
+def listar():
+    class Tabla():
+        def __init__(self,raiz2):
+            nombre_cols = ['Legajo','Apellido','Nombre','Promedio','Escuela']
+            for i in range(cant_cols):
+                self.e=Entry(frameppal)
+                self.e.config(bg='black', fg='white')
+                self.e.grid(row=0, column=i)
+                self.e.insert(END,nombre_cols[i])
+            
+            for fila in range(cant_filas):
+                for cols in range(cant_cols):
+                    self.e=Entry(frameppal)
+                    self.e.grid(row=fila+1, column = cols)
+                    self.e.insert(END, resultado[fila][cols])
+                    self.e.config(state='readonly')
+    
+    raiz2=Tk()
+    raiz2.title('Listado de alumnos')
+    frameppal = Frame(raiz2)
+    frameppal.pack(fill='both')
+    framecerrar = Frame(raiz2)
+    framecerrar.config(bg=color_letra)
+    framecerrar.pack(fill='both')
+
+    boton_cerrar = Button(framecerrar, text="CERRAR",command=raiz2.destroy)
+    boton_cerrar.config(bg=color_boton, fg='white', pady=10, padx=0)
+    boton_cerrar.pack(fill='both')
+
+    # obtener los datos para el listado
+    con = sq3.connect('mi_db.db')
+    cur = con.cursor()
+    query1 = '''
+             SELECT alumnos.legajo, alumnos.apellido, alumnos.nombre, alumnos.nota, escuelas.nombre FROM alumnos INNER JOIN escuelas 
+             ON alumnos.id_escuela = escuelas._id LIMIT 30   
+             '''
+    cur.execute(query1)
+    resultado = cur.fetchall()
+    cant_filas = len(resultado) # la cantidad de registros para saber cuántas filas
+    cant_cols = len(resultado[0])
+
+    tabla = Tabla(frameppal)
+    con.close()
+    raiz2.mainloop()
 
 # ***** CRUD *****
 # Crear
@@ -127,7 +232,14 @@ raiz.config(menu=barramenu)
 # Menú BBDD
 bbddmenu = Menu(barramenu, tearoff=0)
 bbddmenu.add_command(label = 'Conectar con la BBDD', command=conectar)
+bbddmenu.add_command(label = 'Mostrar listado alumnos', command=listar)
 bbddmenu.add_command(label = 'Salir', command=salir)
+
+# Menú estadísticas
+estadmenu = Menu(barramenu, tearoff=0)
+estadmenu.add_command(label='Cantidad de alumnos por escuela', command=alumnos_en_escuelas)
+estadmenu.add_command(label='Desempeño estudiantil', command=alumnos_con_notas)
+
 
 # Menú Limpiar
 limpiarmenu = Menu(barramenu,tearoff=0)
@@ -135,10 +247,11 @@ limpiarmenu.add_command(label = 'Limpiar formulario', command=limpiar)
 
 # Menú Acerca de...
 ayudamenu = Menu(barramenu,tearoff=0)
-ayudamenu.add_command(label='Licencia')
-ayudamenu.add_command(label='Acerca de...')
+ayudamenu.add_command(label='Licencia', command=mostrar_licencia)
+ayudamenu.add_command(label='Acerca de...', command=acerca_de)
 
 barramenu.add_cascade(label='BBDD', menu=bbddmenu)
+barramenu.add_cascade(label='Gráficas',menu=estadmenu)
 barramenu.add_cascade(label='Limpiar',menu=limpiarmenu)
 barramenu.add_cascade(label='Acerca de...', menu=ayudamenu)
 
