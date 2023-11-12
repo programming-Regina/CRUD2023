@@ -1,0 +1,14 @@
+Agregar un elemento en una posición determinada
+Método insert(posición, "nuevo elemento")
+>>> nombres_masculinos.insert(0, "Ricky") 
+>>> print nombres_masculinos 
+['Ricky', 'Alvaro', 'David', 'Edgardo', 'Jacinto', 'Jose', 'Ricky', 'Jose', 
+'Jose', 'Gerardo']
+
+POO
+El método __init__ es el primer método que se ejecuta cuando se crea un objeto y se ejecuta automáticamente = no pasa nada si no lo invocamos, porque se ejecuta al momoento de crear el objeto.
+El método __init__ es un método especial de una clase en Python. El objetivo fundamental del método __init__ es inicializar los atributos del objeto que creamos.
+El método __init__ :
+- no tiene retorno
+- puede recibir parámetros que se utilizan normalmente para inicializar atributos.
+- es un método opcional.
